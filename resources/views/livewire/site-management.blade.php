@@ -75,6 +75,7 @@ with(fn() => ['sites' => Site::all()]);
                                     </div>
                                 </div>
                                 <button wire:click='deleteSite({{ $site->id }})'
+                                    wire:confirm="Are you sure you want to delete this site?"
                                     class="px-4 py-2 text-sm font-medium text-red-600 bg-red-100 rounded-md hover:bg-red-200">
                                     Delete
                                 </button>

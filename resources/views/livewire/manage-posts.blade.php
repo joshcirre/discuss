@@ -2,6 +2,7 @@
 
 use function Livewire\Volt\{state, mount, with, usesPagination};
 use App\Models\Site;
+use App\Models\Post;
 
 usesPagination();
 state(['site', 'title' => '', 'content' => '']);
@@ -15,6 +16,10 @@ $createPost = function () {
 
     $this->title = '';
     $this->content = '';
+};
+
+$deletePost = function (Post $post) {
+    $post->delete();
 };
 
 mount(function (Site $site) {
@@ -73,10 +78,22 @@ with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(
                                     <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ $post->user->name }} ·
                                         {{ $post->created_at->format('M d, Y') }}</p>
                                 </div>
-                                <span
-                                    class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
-                                    {{ $post->created_at->diffForHumans() }}
-                                </span>
+                                <div class="flex items-center">
+                                    <span
+                                        class="inline-flex px-2 mr-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
+                                        {{ $post->created_at->diffForHumans() }}
+                                    </span>
+                                    <button wire:click="deletePost({{ $post->id }})"
+                                        class="text-red-600 hover:text-red-900"
+                                        wire:confirm="Are you sure you want to delete this post?">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="px-4 py-5 border-t border-gray-200 sm:p-0">
