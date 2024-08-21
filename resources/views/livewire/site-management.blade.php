@@ -35,25 +35,33 @@ with(fn() => ['sites' => Site::all()]);
 
     <main class="mt-6">
         <div class="px-4 py-6 sm:px-0">
-            <div class="mb-8">
-                <h2 class="mb-4 text-xl font-semibold">Create New Site</h2>
-                <form wire:submit='createSite' class="p-6 space-y-4 bg-white shadow sm:rounded-lg">
-                    <div>
-                        <x-input-label for='name' :value="__('Site Name')" />
-                        <x-text-input wire:model='name' id='name' class='block mt-1 w-full' type='text'
-                            name='name' required autofocus />
-                        <x-input-error :messages="$errors->get('name')" class='mt-2' />
-                    </div>
+            <div x-data="{
+                name: @entangle('name'),
+                subdomain: @entangle('subdomain'),
+                generateSubdomain() {
+                    this.subdomain = this.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                }
+            }">
+                <div class="mb-8">
+                    <h2 class="mb-4 text-xl font-semibold">Create New Site</h2>
+                    <form wire:submit='createSite' class="p-6 space-y-4 bg-white shadow sm:rounded-lg">
+                        <div>
+                            <x-input-label for='name' :value="__('Site Name')" />
+                            <x-text-input x-model="name" @input="generateSubdomain" id='name'
+                                class='block mt-1 w-full' type='text' name='name' required autofocus />
+                            <x-input-error :messages="$errors->get('name')" class='mt-2' />
+                        </div>
 
-                    <div>
-                        <x-input-label for='subdomain' :value="__('Subdomain')" />
-                        <x-text-input wire:model='subdomain' id='subdomain' class='block mt-1 w-full' type='text'
-                            name='subdomain' required />
-                        <x-input-error :messages="$errors->get('subdomain')" class='mt-2' />
-                    </div>
+                        <div>
+                            <x-input-label for='subdomain' :value="__('Subdomain')" />
+                            <x-text-input x-model="subdomain" id='subdomain' class='block mt-1 w-full' type='text'
+                                name='subdomain' required />
+                            <x-input-error :messages="$errors->get('subdomain')" class='mt-2' />
+                        </div>
 
-                    <x-primary-button>{{ __('Create Site') }}</x-primary-button>
-                </form>
+                        <x-primary-button>{{ __('Create Site') }}</x-primary-button>
+                    </form>
+                </div>
             </div>
 
             <div>
