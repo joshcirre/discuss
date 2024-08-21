@@ -22,7 +22,7 @@ $deleteSite = function (int $id) {
     $site->delete();
 };
 
-with(fn() => ['sites' => Site::all()]);
+with(fn() => ['sites' => Auth::user()->sites]);
 
 ?>
 

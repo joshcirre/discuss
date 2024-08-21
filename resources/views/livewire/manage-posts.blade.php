@@ -8,10 +8,13 @@ usesPagination();
 state(['site', 'title' => '', 'content' => '']);
 
 $createPost = function () {
-    $this->site->posts()->create([
+    $this->site->makeCurrent();
+
+    Post::create([
         'title' => $this->title,
         'content' => $this->content,
         'user_id' => Auth::user()->id,
+        'site_id' => $this->site->id,
     ]);
 
     $this->title = '';
@@ -19,15 +22,22 @@ $createPost = function () {
 };
 
 $deletePost = function (Post $post) {
+    $this->site->makeCurrent();
     $post->delete();
 };
 
 mount(function (Site $site) {
     $this->site = $site;
+    $site->makeCurrent();
 });
 
-with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(15)]);
-
+with(function () {
+    $posts = Post::latest()->paginate(15);
+    $posts->getCollection()->transform(function ($post) {
+        return $post->loadLandlordUser();
+    });
+    return ['posts' => $posts];
+});
 ?>
 
 <div class="py-6 mx-auto max-w-3xl sm:px-6 lg:px-8">

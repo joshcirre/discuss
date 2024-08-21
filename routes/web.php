@@ -6,7 +6,12 @@ use Illuminate\Support\Facades\Route;
 Route::domain('{subdomain}.discuss.test')->group(function () {
     Route::get('/', function ($subdomain) {
         $site = Site::where('subdomain', $subdomain)->firstOrFail();
-        $posts = $site->posts()->with('user')->latest()->paginate(15);
+        $site->makeCurrent();
+
+        $posts = $site->posts()->latest()->paginate(15);
+        $posts->getCollection()->transform(function ($post) {
+            return $post->loadLandlordUser();
+        });
 
         return view('public.sites.home', [
             'site' => $site,

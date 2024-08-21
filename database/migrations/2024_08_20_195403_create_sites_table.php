@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('subdomain');
+            $table->string('turso_db_id')->nullable();
+            $table->string('turso_hostname')->nullable();
             $table->timestamps();
         });
     }
