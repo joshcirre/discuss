@@ -1,32 +1,34 @@
 <?php
 
-use App\Models\Site;
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-Route::domain('{subdomain}.discuss.test')->group(function () {
-    Route::get('/', function ($subdomain) {
-        $site = Site::where('subdomain', $subdomain)->firstOrFail();
-        $posts = $site->posts()->with('user')->latest()->paginate(15);
+foreach (config('tenancy.central_domains') as $domain) {
+    Route::domain($domain)->group(function () {
+        Route::get('/', function () {
+            return view('welcome');
+        });
 
-        return view('public.sites.home', [
-            'site' => $site,
-            'posts' => $posts,
-        ]);
+        Route::middleware(['auth', 'verified'])->group(function () {
+            Route::view('dashboard', 'dashboard')->name('dashboard');
+            Route::view('sites/manage/{site}', 'sites.manage')->name('sites.manage');
+        });
+
+        Route::view('profile', 'profile')
+            ->middleware(['auth'])
+            ->name('profile');
+
+        require __DIR__.'/auth.php';
+    });
+}
+
+Route::middleware([
+    'web',
+    InitializeTenancyBySubdomain::class,
+    PreventAccessFromCentralDomains::class,
+])->group(function () {
+    Route::get('/', function () {
+        return 'This is your multi-tenant application. The id of the current tenant is '.tenant('id');
     })->name('site.home');
 });
-
-Route::view('/', 'welcome');
-
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-Route::view('sites/manage/{site}', 'sites.manage')
-    ->middleware(['auth', 'verified'])
-    ->name('sites.manage');
-
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
-
-require __DIR__.'/auth.php';

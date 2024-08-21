@@ -6,12 +6,13 @@ use App\Models\Site;
 state(['name' => '', 'subdomain' => '']);
 
 $createSite = function () {
-    Auth::user()
-        ->sites()
-        ->create([
-            'name' => $this->name,
-            'subdomain' => $this->subdomain,
-        ]);
+    $site = Site::create([
+        'id' => $this->subdomain, // Use subdomain as the tenant id
+        'name' => $this->name,
+        'user_id' => Auth::id(),
+    ]);
+
+    $site->domains()->create(['domain' => $this->subdomain]);
 
     $this->name = '';
     $this->subdomain = '';
