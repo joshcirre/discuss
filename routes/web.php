@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 Route::domain('{subdomain}.discuss.test')->group(function () {
     Route::get('/', function ($subdomain) {
         $site = Site::where('subdomain', $subdomain)->firstOrFail();
+
+        // connect to the site database
+
         $posts = $site->posts()->with('user')->latest()->paginate(15);
 
         return view('public.sites.home', [

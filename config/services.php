@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'turso' => [
+        'api_key' => env('TURSO_API_KEY'),
+        'organization' => env('TURSO_ORGANIZATION'),
+    ],
+
 ];

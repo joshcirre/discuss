@@ -2,16 +2,19 @@
 
 use function Livewire\Volt\{state, with};
 use App\Models\Site;
+use App\Jobs\CreateTursoDatabase;
 
 state(['name' => '', 'subdomain' => '']);
 
 $createSite = function () {
-    Auth::user()
+    $site = Auth::user()
         ->sites()
         ->create([
             'name' => $this->name,
             'subdomain' => $this->subdomain,
         ]);
+
+    CreateTursoDatabase::dispatch($site);
 
     $this->name = '';
     $this->subdomain = '';
@@ -22,7 +25,7 @@ $deleteSite = function (int $id) {
     $site->delete();
 };
 
-with(fn() => ['sites' => Site::all()]);
+with(fn() => ['sites' => Auth::user()->sites]);
 
 ?>
 

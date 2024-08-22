@@ -5,14 +5,17 @@ use App\Models\Site;
 use App\Models\Post;
 
 usesPagination();
+
 state(['site', 'title' => '', 'content' => '']);
 
 $createPost = function () {
-    $this->site->posts()->create([
+    $post = new Post([
         'title' => $this->title,
         'content' => $this->content,
         'user_id' => Auth::user()->id,
     ]);
+
+    $this->site->posts()->save($post);
 
     $this->title = '';
     $this->content = '';
@@ -26,7 +29,9 @@ mount(function (Site $site) {
     $this->site = $site;
 });
 
-with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(15)]);
+with(function () {
+    return ['posts' => $this->site->posts()->with('user')->latest()->paginate(15)];
+});
 
 ?>
 
