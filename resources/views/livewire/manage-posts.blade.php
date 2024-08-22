@@ -34,10 +34,15 @@ with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(
     <header class="bg-white rounded-lg shadow">
         <div class="px-4 py-6 mx-auto max-w-3xl sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold text-gray-900">Manage Posts for {{ $site->name }}</h1>
-            <p class="text-sm text-gray-500">
-                <a href="{{ route('site.home', ['subdomain' => $site->subdomain]) }}"
-                    class="text-blue-500 hover:underline">
-                    {{ $site->subdomain }}.{{ str_replace(['http:', 'https:'], '', config('app.url')) }}
+            <p class="mt-2 text-sm text-gray-500">
+                <a href="{{ route('site.home', ['site' => $site->subdomain]) }}"
+                    class="mr-2 text-sm text-blue-600 hover:underline">View Site</a>
+                @php
+                    $baseUrl = config('app.url');
+                    $baseUrl = parse_url($baseUrl, PHP_URL_HOST) ?: $baseUrl;
+                    $baseUrl = rtrim($baseUrl, '/');
+                @endphp
+                {{ $site->subdomain }}.{{ tenant()->domains->first()->domain }}.{{ $baseUrl }}
                 </a>
             </p>
         </div>

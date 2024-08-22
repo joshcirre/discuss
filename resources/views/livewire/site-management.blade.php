@@ -73,10 +73,15 @@ with(fn() => ['sites' => Site::all()]);
                                 <div>
                                     <h3 class="text-lg font-medium leading-6 text-gray-900">{{ $site->name }}</h3>
                                     <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                                        {{ $site->subdomain }}.{{ str_replace(['http:', 'https:'], '', config('app.url')) }}
+                                        @php
+                                            $baseUrl = config('app.url');
+                                            $baseUrl = parse_url($baseUrl, PHP_URL_HOST) ?: $baseUrl;
+                                            $baseUrl = rtrim($baseUrl, '/');
+                                        @endphp
+                                        {{ $site->subdomain }}.{{ tenant()->domains->first()->domain }}.{{ $baseUrl }}
                                     </p>
                                     <div class="mt-2">
-                                        <a href="{{ route('site.home', ['subdomain' => $site->subdomain]) }}"
+                                        <a href="{{ route('site.home', ['site' => $site->subdomain]) }}"
                                             class="mr-4 text-sm text-blue-600 hover:underline">View Site</a>
                                         <a href="{{ route('sites.manage', $site) }}"
                                             class="text-sm text-blue-600 hover:underline">Manage Posts</a>
