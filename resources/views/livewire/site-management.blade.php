@@ -2,16 +2,28 @@
 
 use function Livewire\Volt\{state, with};
 use App\Models\Site;
+use App\Models\Tenant;
 
 state(['name' => '', 'subdomain' => '']);
 
 $createSite = function () {
-    Auth::user()
+    $site = Auth::user()
         ->sites()
         ->create([
             'name' => $this->name,
             'subdomain' => $this->subdomain,
         ]);
+
+    $databaseName = 'tenant-' . $site->id; // Generate a unique database name
+
+    $tenant = Tenant::create([
+        'id' => $site->id, // Use the site's ID as the tenant ID
+        'database_name' => $databaseName,
+    ]);
+
+    $tenant->domains()->create([
+        'domain' => $this->subdomain,
+    ]);
 
     $this->name = '';
     $this->subdomain = '';

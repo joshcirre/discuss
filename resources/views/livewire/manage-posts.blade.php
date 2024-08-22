@@ -3,6 +3,7 @@
 use function Livewire\Volt\{state, mount, with, usesPagination};
 use App\Models\Site;
 use App\Models\Post;
+use App\Models\Tenant;
 
 usesPagination();
 state(['site', 'title' => '', 'content' => '']);
@@ -26,8 +27,15 @@ mount(function (Site $site) {
     $this->site = $site;
 });
 
-with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(15)]);
+with(function () {
+    $tenant = Tenant::find('9a2dec35-9187-4d5b-8ce8-11326c36188b');
 
+    tenancy()->initialize($tenant);
+
+    return [
+        'posts' => Post::all(),
+    ];
+});
 ?>
 
 <div class="py-6 mx-auto max-w-3xl sm:px-6 lg:px-8">
