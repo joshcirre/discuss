@@ -73,7 +73,7 @@ with(fn() => ['sites' => Site::all()]);
                                 <div>
                                     <h3 class="text-lg font-medium leading-6 text-gray-900">{{ $site->name }}</h3>
                                     <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                                        {{ $site->subdomain }}.{{ parse_url(config('app.url'), PHP_URL_HOST) }}
+                                        {{ $site->subdomain }}.{{ str_replace(['http:', 'https:'], '', config('app.url')) }}
                                     </p>
                                     <div class="mt-2">
                                         <a href="{{ route('site.home', ['subdomain' => $site->subdomain]) }}"

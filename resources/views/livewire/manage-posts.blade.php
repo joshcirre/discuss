@@ -37,7 +37,7 @@ with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(
             <p class="text-sm text-gray-500">
                 <a href="{{ route('site.home', ['subdomain' => $site->subdomain]) }}"
                     class="text-blue-500 hover:underline">
-                    {{ $site->subdomain }}.{{ parse_url(config('app.url'), PHP_URL_HOST) }}
+                    {{ $site->subdomain }}.{{ str_replace(['http:', 'https:'], '', config('app.url')) }}
                 </a>
             </p>
         </div>
