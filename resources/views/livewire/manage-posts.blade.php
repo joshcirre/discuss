@@ -30,14 +30,19 @@ with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(
 
 ?>
 
-<div class="py-6 mx-auto max-w-3xl sm:px-6 lg:px-8">
+<div class="max-w-3xl py-6 mx-auto sm:px-6 lg:px-8">
     <header class="bg-white rounded-lg shadow">
-        <div class="px-4 py-6 mx-auto max-w-3xl sm:px-6 lg:px-8">
+        <div class="max-w-3xl px-4 py-6 mx-auto sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold text-gray-900">Manage Posts for {{ $site->name }}</h1>
             <p class="text-sm text-gray-500">
-                <a href="{{ route('site.home', ['subdomain' => $site->subdomain]) }}"
-                    class="text-blue-500 hover:underline">
-                    {{ $site->subdomain }}.{{ str_replace(['http:', 'https:'], '', config('app.url')) }}
+                <a href="{{ route('site.home', ['site' => $site->subdomain]) }}"
+                    class="mr-2 text-sm text-blue-600 hover:underline">View Site</a>
+                @php
+                    $baseUrl = config('app.url');
+                    $baseUrl = parse_url($baseUrl, PHP_URL_HOST) ?: $baseUrl;
+                    $baseUrl = rtrim($baseUrl, '/');
+                @endphp
+                {{ $site->subdomain }}.{{ tenant()->domains->first()->domain }}.{{ $baseUrl }}
                 </a>
             </p>
         </div>
@@ -50,7 +55,7 @@ with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(
                 <form wire:submit='createPost' class="p-6 space-y-4 bg-white shadow sm:rounded-lg">
                     <div>
                         <x-input-label for='title' :value="__('Title')" />
-                        <x-text-input wire:model='title' id='title' class='block mt-1 w-full' type='text'
+                        <x-text-input wire:model='title' id='title' class='block w-full mt-1' type='text'
                             name='title' required autofocus />
                         <x-input-error :messages="$errors->get('title')" class='mt-2' />
                     </div>
@@ -58,7 +63,7 @@ with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(
                     <div>
                         <x-input-label for='content' :value="__('Content')" />
                         <textarea wire:model='content' id='content'
-                            class='block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'
+                            class='block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'
                             name='content' rows="4" required></textarea>
                         <x-input-error :messages="$errors->get('content')" class='mt-2' />
                     </div>
@@ -70,12 +75,12 @@ with(fn() => ['posts' => $this->site->posts()->with('user')->latest()->paginate(
             <div>
                 <h2 class="mb-4 text-xl font-semibold">Posts</h2>
                 @forelse ($posts as $post)
-                    <div class="overflow-hidden mb-4 bg-white shadow sm:rounded-lg">
+                    <div class="mb-4 overflow-hidden bg-white shadow sm:rounded-lg">
                         <div class="px-4 py-5 sm:px-6">
-                            <div class="flex justify-between items-center">
+                            <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-lg font-medium leading-6 text-gray-900">{{ $post->title }}</h3>
-                                    <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ $post->user->name }} ·
+                                    <p class="max-w-2xl mt-1 text-sm text-gray-500">{{ $post->user->name }} ·
                                         {{ $post->created_at->format('M d, Y') }}</p>
                                 </div>
                                 <div class="flex items-center">

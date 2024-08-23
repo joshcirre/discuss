@@ -26,9 +26,9 @@ with(fn() => ['sites' => Site::all()]);
 
 ?>
 
-<div class="py-6 mx-auto max-w-3xl sm:px-6 lg:px-8">
+<div class="max-w-3xl py-6 mx-auto sm:px-6 lg:px-8">
     <header class="bg-white rounded-lg shadow">
-        <div class="px-4 py-6 mx-auto max-w-3xl sm:px-6 lg:px-8">
+        <div class="max-w-3xl px-4 py-6 mx-auto sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold text-gray-900">Manage Sites</h1>
         </div>
     </header>
@@ -48,13 +48,13 @@ with(fn() => ['sites' => Site::all()]);
                         <div>
                             <x-input-label for='name' :value="__('Site Name')" />
                             <x-text-input x-model="name" @input="generateSubdomain" id='name'
-                                class='block mt-1 w-full' type='text' name='name' required autofocus />
+                                class='block w-full mt-1' type='text' name='name' required autofocus />
                             <x-input-error :messages="$errors->get('name')" class='mt-2' />
                         </div>
 
                         <div>
                             <x-input-label for='subdomain' :value="__('Subdomain')" />
-                            <x-text-input x-model="subdomain" id='subdomain' class='block mt-1 w-full' type='text'
+                            <x-text-input x-model="subdomain" id='subdomain' class='block w-full mt-1' type='text'
                                 name='subdomain' required />
                             <x-input-error :messages="$errors->get('subdomain')" class='mt-2' />
                         </div>
@@ -67,16 +67,21 @@ with(fn() => ['sites' => Site::all()]);
             <div>
                 <h2 class="mb-4 text-xl font-semibold">Your Sites</h2>
                 @forelse ($sites as $site)
-                    <div class="overflow-hidden mb-4 bg-white shadow sm:rounded-lg">
+                    <div class="mb-4 overflow-hidden bg-white shadow sm:rounded-lg">
                         <div class="px-4 py-5 sm:px-6">
-                            <div class="flex justify-between items-center">
+                            <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-lg font-medium leading-6 text-gray-900">{{ $site->name }}</h3>
-                                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                                        {{ $site->subdomain }}.{{ str_replace(['http:', 'https:'], '', config('app.url')) }}
+                                    <p class="max-w-2xl mt-1 text-sm text-gray-500">
+                                        @php
+                                            $baseUrl = config('app.url');
+                                            $baseUrl = parse_url($baseUrl, PHP_URL_HOST) ?: $baseUrl;
+                                            $baseUrl = rtrim($baseUrl, '/');
+                                        @endphp
+                                        {{ $site->subdomain }}.{{ tenant()->domains->first()->domain }}.{{ $baseUrl }}
                                     </p>
                                     <div class="mt-2">
-                                        <a href="{{ route('site.home', ['subdomain' => $site->subdomain]) }}"
+                                        <a href="{{ route('site.home', ['site' => $site->subdomain]) }}"
                                             class="mr-4 text-sm text-blue-600 hover:underline">View Site</a>
                                         <a href="{{ route('sites.manage', $site) }}"
                                             class="text-sm text-blue-600 hover:underline">Manage Posts</a>
